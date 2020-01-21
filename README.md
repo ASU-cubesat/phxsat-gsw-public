@@ -6,14 +6,7 @@ Released for public use by Phoenix Cubesat Team @ Arizona State University
 
 As our cities continue to grow, the layout and material composition of urban areas impact what is known as the Urban Heat Island (UHI) Effect: a phenomenon in which the structure of the city causes a rise in surface temperature.
 
-Phoenix is a 3U CubeSat designed by students from Arizona State University which aims to study UHIs from Low Earth Orbit (LEO) through infrared remote sensing. The project is an interdisciplinary collaboration which has joined efforts of 5 major ASU schools to pursue a common goal and make the world a better place for generations to come. These collaborations include
-
-Ira A Fulton Schools of Engineering
-School of Geographical Sciences & Urban Planning
-Herberger Institute for Design and the Arts
-Walter Cronkite School of Journalism
-School of Earth & Space Exploration
- The team is currently in the Critical Design phase of the mission, in which they are finishing flight software development and systems level testing. Flight assembly and environmental testing will occur May-June 2019 for a delivery by July 1, 2019.
+Phoenix is a 3U CubeSat designed by students from Arizona State University which aims to study UHIs from Low Earth Orbit (LEO) through infrared remote sensing. The project is an interdisciplinary collaboration which has joined efforts of 5 major ASU schools to pursue a common goal and make the world a better place for generations to come. 
 
 ## Mission objectives
 
@@ -25,9 +18,18 @@ Educate the community on the importance of Urban Heat Islands and inspire the ne
 
 This software contains the core libcsp libraries used to interact with the Phoenix over a radio link. The software package also consists of a Command-Line interface which presently supports reading a heartbeat packet from Phoenix and the ability to direcly send a ping packet to Phoenix. 
 
-In order to communicate with Phoenix you could use a amateur radio tranceiver with UHF capabilities and a TNC that can decode the AX.25 packets transmitted using GMSK signal at 9600 baud.
+In order to communicate with Phoenix you could use a amateur radio tranceiver with UHF capabilities and a TNC that can demodulate the AX.25 packets transmitted using GMSK signal at 9600 baud. The TNC should be in KISS mode.
 
-### Hardware Requirements:
+### Phoenix Transceiver Info:
+- Hardware Model: GomSpace AX-100 
+- Operating Frequency: 437.35 MHz
+- Bandwidth: 20 kHz
+- Modulation Type: GMSK (Mod Index: 0.5)
+- Baud rate: 9600 bps
+- Protocol: AX-25 KISS packets with HDLC encapsulation
+- Encoding: NRZI G3RUH/K9NG scrambled
+
+### Ground Station Hardware Requirements:
 1. Radio Transceiver
 2. TNC
 3. Linux Computer
@@ -39,7 +41,7 @@ In order to communicate with Phoenix you could use a amateur radio tranceiver wi
 2. TNC: Kantronics KPC 9612 Plus
 
 ### Tracking the satellite:
-1. Fetch the TLE for Phoenix from either the phoenix cubesat official website or space-track.org
+1. Fetch the TLE for Phoenix from either the phoenix cubesat official website (phxcubesat.asu.edu) or space-track.org (need a space-track account, however)
 2. Use a satellite tracking software like GPredict to calculate overhead passes for your location. This could be used with an automatic rotor system that ensures better connectivity. GPredict also helps with dopler shifting on your radio.
 
 ### Compile Phoenix Ground Station 
