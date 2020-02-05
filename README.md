@@ -49,7 +49,9 @@ In order to communicate with Phoenix you could use a amateur radio tranceiver wi
 
 ### Sending a ping command via direct audio (without TNC)
 1. There is a recording of the outgoing ping command (audio 32-bit Floating waveform @ 3,200,00 Hz Sample Rate) which can be used in the event a Hardware/Software TNC is not available.
-2. The audio file by the name *PHX_pingto_command.wav* can be found on the root of the repository. 
+2. The audio file by the name *PHX_pingto_command.wav* can be found in the Recordings directory.
+  There is an additional file named *PHX_AX100_hk.wav* which is a housekeeping packet from our satellite's UHF radio transceiver.
+  A complete breakdown of the HEX translation of each packet alongwith it's packet structure is included in an additional file named *PHX_ping_hk_packet_details.txt*
 3. This can be directly transmitted to the satellite to initiate a ping request.
 4. On successful receipt of this request by the satellite you should see a ping back on the same frequency (437.350 MHz NFM).
 
