@@ -47,6 +47,12 @@ In order to communicate with Phoenix you could use a amateur radio tranceiver wi
 ### Compile Phoenix Ground Station 
 1. Run quickMake.sh to compile and run the ground station software. 
 
+### Sending a ping command via direct audio (without TNC)
+1. There is a recording of the outgoing ping command (audio 32-bit Floating waveform @ 3,200,00 Hz Sample Rate) which can be used in the event a Hardware/Software TNC is not available.
+2. The audio file by the name *PHX_pingto_command.wav* can be found on the root of the repository. 
+3. This can be directly transmitted to the satellite to initiate a ping request.
+4. On successful receipt of this request by the satellite you should see a ping back on the same frequency (437.350 MHz NFM).
+
 ### Troubleshooting 
 - Device not found error.
 1. In the source code navigate to main.c
