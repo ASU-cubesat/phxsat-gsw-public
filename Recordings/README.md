@@ -38,7 +38,7 @@ This packet is a housekeeping packet sent from our EM AX100 radio, which contain
 
 
 *AX100 hk packet structure* 
-The following data is the telemetry from the AX100 that is captured in the audio file. However, if you are using the ground station
+The following data is the telemetry from the AX100 that is captured in the I/Q file. However, if you are using the ground station
 code to decode this, the last 4 bytes (the tot_rx_bytes) will be cut off, as the ground station code normally expects the last 4 bytes to be the CRC of Phoenix's health beacon and cuts these off. 
 
 |data| description |
