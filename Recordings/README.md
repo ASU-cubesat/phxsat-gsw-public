@@ -10,6 +10,7 @@
 
 
 *Ping 2 Packet Structure*
+
 | data | description |
 |--|--|
 | c0 10 | start of KISS framing & command byte |
