@@ -45,7 +45,15 @@ In order to communicate with Phoenix you could use a amateur radio tranceiver wi
 2. Use a satellite tracking software like GPredict to calculate overhead passes for your location. This could be used with an automatic rotor system that ensures better connectivity. GPredict also helps with dopler shifting on your radio.
 
 ### Compile Phoenix Ground Station 
-1. Run quickMake.sh to compile and run the ground station software. 
+1. Clone this repository into you local machine using
+`git clone https://github.com/ASU-cubesat/phxsat-gsw-public.git`
+2. Edit `src/main.c` to point to your tnc device for e.g. change
+`conf.device = argc == 2 ? argv[1] : "/dev/ttyUSB0";`
+to
+`conf.device = argc == 2 ? argv[1] : "/dev/ttyS4";`
+if you are using Serial port #4
+3. Run make to compile the source code. If this runs successfully you should see a executable named `csp-client` in the root directory.
+4. Now you can run `quickMake.sh` to compile and run the ground station software. This should open two seprate windows. The window named *Command Terminal* is used for typing commands, while the *OBC Output* window displays any message received from the satellite.
 
 ### Sending a ping command via I/Q files (without TNC)
 1. There is a recording of the outgoing ping command (I/Q file 32-bit Floating waveform @ 3,200,00 Hz Sample Rate) which can be used in the event a Hardware/Software TNC is not available.
