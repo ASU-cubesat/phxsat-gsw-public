@@ -19,7 +19,7 @@
 
 /*
         To disable the prompt on startup for your callsign,
-        set ENABLE_CALLSIGN_PROMPT to 0 
+        set DISABLE_CALLSIGN_PROMPT to 1 
         and, change value of callsign to your callsign
         for e.g. change "ABCDEF" to "YRSIGN"
         
@@ -27,8 +27,9 @@
         AS THIS STEP BYPASSES VALIDATION.
 
 */
-#define ENABLE_CALLSIGN_PROMPT 1
-char callsign[25] = "XXXXXX";
+#define DISABLE_CALLSIGN_PROMPT 0
+char src_callsign[25] = "XXXXXX";
+char des_callsign[25] = "XXXXXX";
 
 //////////////////////////////////////////////////////////////////////
 
@@ -41,16 +42,16 @@ extern uint8_t ax25_dest_src_bytes[];
 
 int main(int argc, char **argv) {
 
-    // uint8_t custom[] = {
-	// 	0x96, 0x92, 0x9E, 0x9E, 0x6E, 0xB2, 0x60,
-	// 	0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x61
-	// };
+    uint8_t custom[] = {
+		0x96, 0x92, 0x6E, 0x9E, 0x9E, 0xB2, 0x60,
+		0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x61
+	};
     
     int i;
-    // for(i=0;i<14;i++){
-    //     ax25_dest_src_bytes[i] = custom[i];
-    //     // printf("%02x ",ax25_dest_src_bytes[i]);
-    // }
+    for(i=0;i<14;i++){
+        ax25_dest_src_bytes[i] = custom[i];
+        // printf("%02x ",ax25_dest_src_bytes[i]);
+    }
 
 
     printf("\x1B[37m");
@@ -66,26 +67,26 @@ int main(int argc, char **argv) {
 
     
     // char callsign[1024] = CALL_SIGN; // This is used if prompt is disabled. 
-    bool call_ok = ENABLE_CALLSIGN_PROMPT; // Set this to true to bypass callsign prompt
+    bool call_ok = DISABLE_CALLSIGN_PROMPT; // Set this to true to bypass callsign prompt
     
     
     
     uint8_t invalid_char = 0;
     while(!call_ok){
-        printf("\x1B[1;33m\nEnter Your CallSign:\n\x1B[0m");
+        printf("\x1B[1;33m\nEnter Source CallSign:\n\x1B[0m");
         printf("\x1B[33m");
-        fgets(callsign,1024,stdin);
+        fgets(src_callsign,1024,stdin);
         printf("\x1B[0m");
-        if(strlen(callsign)>7){
-            printf("\x1B[31mInvalid Callsign. Length greater than 6 not allowed (%ld). Try Again\n \x1B[0m",strlen(callsign));
+        if(strlen(src_callsign)>7){
+            printf("\x1B[31mInvalid Callsign. Length greater than 6 not allowed (%ld). Try Again\n \x1B[0m",strlen(src_callsign));
             continue;
         }
         invalid_char = 0;
-        for(i=0;i<strlen(callsign);i++){
+        for(i=0;i<strlen(src_callsign);i++){
             
-            if(callsign[i]>='a' && callsign[i] <='z'){
-                callsign[i] -= 32;
-            } else if((callsign[i]>='0' && callsign[i]<='9') || (callsign[i]>='A' && callsign[i]<='Z')) {
+            if(src_callsign[i]>='a' && src_callsign[i] <='z'){
+                src_callsign[i] -= 32;
+            } else if((src_callsign[i]>='0' && src_callsign[i]<='9') || (src_callsign[i]>='A' && src_callsign[i]<='Z')) {
                 ;
             } else {
                 invalid_char++;
@@ -99,17 +100,61 @@ int main(int argc, char **argv) {
         call_ok = true;
     }
 
-    printf("\x1B[1;32mYour callsign has been set to %s\n\x1B[0m",callsign);
-
     for(i=0;i<6;i++){
-        if(i<strlen(callsign)-1){
+        if(i<strlen(src_callsign)-1){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
-            ax25_dest_src_bytes[i+7] = callsign[i]<<1;
+            ax25_dest_src_bytes[i+7] = src_callsign[i]<<1;
         }
         else{
             ax25_dest_src_bytes[i+7] = 0;
         }
     }
+
+    printf("\x1B[1;32mSource callsign has been set to %s\n\x1B[0m",src_callsign);
+
+    call_ok = DISABLE_CALLSIGN_PROMPT;
+    invalid_char = 0;
+    while(!call_ok){
+        printf("\x1B[1;33m\nEnter Destination CallSign:\n\x1B[0m");
+        printf("\x1B[33m");
+        fgets(des_callsign,1024,stdin);
+        printf("\x1B[0m");
+        if(strlen(des_callsign)>7){
+            printf("\x1B[31mInvalid Callsign. Length greater than 6 not allowed (%ld). Try Again\n \x1B[0m",strlen(des_callsign));
+            continue;
+        }
+        invalid_char = 0;
+        for(i=0;i<strlen(des_callsign);i++){
+            
+            if(des_callsign[i]>='a' && des_callsign[i] <='z'){
+                des_callsign[i] -= 32;
+            } else if((des_callsign[i]>='0' && des_callsign[i]<='9') || (des_callsign[i]>='A' && des_callsign[i]<='Z')) {
+                ;
+            } else {
+                invalid_char++;
+            }
+        }
+        invalid_char--;
+        if(invalid_char>0){
+            printf("\x1B[31m%ld Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
+            continue;
+        } 
+        call_ok = true;
+    }
+
+    for(i=0;i<6;i++){
+        if(i<strlen(des_callsign)-1){
+            // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
+            ax25_dest_src_bytes[i] = des_callsign[i]<<1;
+        }
+        else{
+            ax25_dest_src_bytes[i] = 0;
+        }
+    }
+
+    printf("\x1B[1;32mDestination callsign has been set to %s\n\x1B[0m",des_callsign);
+
+    
 
     // printf("Arguments: count = %d, args = ", argc);
     // for (int i = 0; i < argc; i++) {
