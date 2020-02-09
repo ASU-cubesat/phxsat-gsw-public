@@ -25,6 +25,7 @@
 #include <csp/csp_crc32.h>
 
 #include <common.h>
+#include <time.h>
 
 
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -36,8 +37,24 @@
 CSP_DEFINE_TASK(debug_task) {
 
     while(1){
-        printf("\x1b[31m--->> Remaining Buffer : %d \x1b[0m \n",csp_buffer_remaining());
-        csp_sleep_ms(1000);
+        // Print Remaining Buffer
+        // printf("\x1b[31m--->> Remaining Buffer : %d \x1b[0m \n",csp_buffer_remaining());
+
+        // Display Timestamp
+        // variables to store date and time components
+        int hours, minutes, seconds, day, month, year;
+
+        // time_t is arithmetic time type
+        time_t now;
+        
+        // Obtain current time
+        // time() returns the current time of the system as a time_t value
+        time(&now);
+
+        // Convert to local time format and print to stdout
+        printf("\x1B[33m %s \033[0m", ctime(&now));
+
+        csp_sleep_ms(5000);
     }
 
     return CSP_TASK_RETURN;

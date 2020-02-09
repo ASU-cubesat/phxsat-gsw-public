@@ -20,7 +20,22 @@
 csp_thread_handle_t server_handle;
 csp_thread_handle_t debug_handle;
 
+extern uint8_t ax25_dest_src_bytes[];
+
 int main(int argc, char **argv) {
+
+    uint8_t custom[] = {
+		0x96, 0x92, 0x9E, 0x9E, 0x6E, 0xB2, 0x60,
+		0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x61
+	};
+    
+    int i;
+    for(i=0;i<14;i++){
+        ax25_dest_src_bytes[i] = custom[i];
+        printf("%02x ",ax25_dest_src_bytes[i]);
+    }
+
+
     printf("\x1B[37m");
     printf("************************************************\n");
     printf("*****    PHOENIX CUBESAT GROUND STATION    *****\n");
@@ -30,6 +45,50 @@ int main(int argc, char **argv) {
     printf("************************************************\n");
     printf("\x1B[0m");
 
+    // This part of the code gets/validates the callsign from the operator
+
+    char callsign[1024];
+    bool call_ok = false;
+    uint8_t invalid_char = 0;
+    while(!call_ok){
+        printf("\x1B[1;33m\nEnter Your CallSign:\n\x1B[0m");
+        printf("\x1B[33m");
+        fgets(callsign,1024,stdin);
+        printf("\x1B[0m");
+        if(strlen(callsign)>7){
+            printf("\x1B[31mInvalid Callsign. Length greater than 6 not allowed (%ld). Try Again\n \x1B[0m",strlen(callsign));
+            continue;
+        }
+        invalid_char = 0;
+        for(i=0;i<strlen(callsign);i++){
+            
+            if(callsign[i]>='a' && callsign[i] <='z'){
+                callsign[i] -= 32;
+            } else if((callsign[i]>='0' && callsign[i]<='9') || (callsign[i]>='A' && callsign[i]<='Z')) {
+                ;
+            } else {
+                invalid_char++;
+            }
+        }
+        invalid_char--;
+        if(invalid_char>0){
+            printf("\x1B[31m%ld Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
+            continue;
+        } 
+        call_ok = true;
+    }
+
+    printf("\x1B[1;32mYour callsign has been set to %s\n\x1B[0m",callsign);
+
+    for(i=0;i<6;i++){
+        if(i<strlen(callsign)-1){
+            // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
+            ax25_dest_src_bytes[i+7] = callsign[i]<<1;
+        }
+        else{
+            ax25_dest_src_bytes[i+7] = 0;
+        }
+    }
 
     // printf("Arguments: count = %d, args = ", argc);
     // for (int i = 0; i < argc; i++) {
@@ -52,7 +111,8 @@ int main(int argc, char **argv) {
 
     // Initialize USART
     struct usart_conf conf;
-    conf.device = argc == 2 ? argv[1] : "/dev/ttyUSB0";
+    // conf.device = argc == 2 ? argv[1] : "/dev/ttyUSB4";
+    conf.device = argc == 2 ? argv[1] : "/tmp/kisstnc";
     conf.baudrate = 9600;
     usart_init(&conf);
 
@@ -122,9 +182,9 @@ int main(int argc, char **argv) {
 
 
     /*
-        Uncomment below line to monitor remaining buffers
+        Uncomment below line to enable debugging
     */
-    //csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
+    // csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
 
     // Check with printout
     //csp_conn_print_table();
