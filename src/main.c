@@ -15,6 +15,23 @@
 #define PORT 31
 #define MY_ADDRESS 10
 
+//////////////////////////////////////////////////////////////////////
+
+/*
+        To disable the prompt on startup for your callsign,
+        set ENABLE_CALLSIGN_PROMPT to 0 
+        and, change value of callsign to your callsign
+        for e.g. change "ABCDEF" to "YRSIGN"
+        
+        WARNING USE A VALID CALLSIGN OF LENGTH MAX 6 CHARACTERS 
+        AS THIS STEP BYPASSES VALIDATION.
+
+*/
+#define ENABLE_CALLSIGN_PROMPT 1
+char callsign[25] = "XXXXXX";
+
+//////////////////////////////////////////////////////////////////////
+
 #define USART_HANDLE 0
 
 csp_thread_handle_t server_handle;
@@ -24,16 +41,16 @@ extern uint8_t ax25_dest_src_bytes[];
 
 int main(int argc, char **argv) {
 
-    uint8_t custom[] = {
-		0x96, 0x92, 0x9E, 0x9E, 0x6E, 0xB2, 0x60,
-		0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x61
-	};
+    // uint8_t custom[] = {
+	// 	0x96, 0x92, 0x9E, 0x9E, 0x6E, 0xB2, 0x60,
+	// 	0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x61
+	// };
     
     int i;
-    for(i=0;i<14;i++){
-        ax25_dest_src_bytes[i] = custom[i];
-        printf("%02x ",ax25_dest_src_bytes[i]);
-    }
+    // for(i=0;i<14;i++){
+    //     ax25_dest_src_bytes[i] = custom[i];
+    //     // printf("%02x ",ax25_dest_src_bytes[i]);
+    // }
 
 
     printf("\x1B[37m");
@@ -47,8 +64,12 @@ int main(int argc, char **argv) {
 
     // This part of the code gets/validates the callsign from the operator
 
-    char callsign[1024];
-    bool call_ok = false;
+    
+    // char callsign[1024] = CALL_SIGN; // This is used if prompt is disabled. 
+    bool call_ok = ENABLE_CALLSIGN_PROMPT; // Set this to true to bypass callsign prompt
+    
+    
+    
     uint8_t invalid_char = 0;
     while(!call_ok){
         printf("\x1B[1;33m\nEnter Your CallSign:\n\x1B[0m");
@@ -115,6 +136,10 @@ int main(int argc, char **argv) {
     conf.device = argc == 2 ? argv[1] : "/tmp/kisstnc";
     conf.baudrate = 9600;
     usart_init(&conf);
+
+    // Print current TNC selected
+
+    printf("\x1B[1;33mUsing TNC at %s\n\x1B[0m",conf.device);
 
     // Initialize TNC
     static csp_iface_t csp_if_tnc;
