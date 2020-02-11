@@ -52,8 +52,10 @@ In order to communicate with Phoenix you could use a amateur radio tranceiver wi
 to
 `conf.device = argc == 2 ? argv[1] : "/dev/ttyS4";`
 if you are using Serial port #4
-3. Run make to compile the source code. If this runs successfully you should see an executable named `csp-client` in the root directory.
-4. Now you can run `quickMake.sh` to compile and run the ground station software. This should open two separate windows. The window named *Command Terminal* is used for typing commands, while the *OBC Output* window displays any message received from the satellite.
+3. Run `git submodule update --init` to update the nested submodules 
+4. Some changes were made to our host repo to allow amateur operators to transmit to Phoenix with their callsign. As a result, you will need to pull these changes from the host repo to properly compile the code. First enter the libcsp folder (`cd libcsp`). Then, checkout the master branch within this folder (`git checkout master`) 
+5. Go back to the root folder (`cd ..`). Then run `make` to compile the source code. If this runs successfully you should see an executable named `csp-client` in the root directory.
+6. Now you can run `quickMake.sh` to compile and run the ground station software. This should open two separate windows. The window named *Command Terminal* is used for typing commands, while the *OBC Output* window displays any message received from the satellite.
 
 ### Sending a ping command via I/Q files (without TNC)
 1. There is a recording of the outgoing ping command (I/Q file 32-bit Floating waveform @ 3,200,00 Hz Sample Rate) which can be used in the event a Hardware/Software TNC is not available.
