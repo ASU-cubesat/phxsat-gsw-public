@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
                 ax25_dest_src_bytes[i+7] = 0;
             }
             
-            printf("%02x\n",src_callsign[i]);
+            // printf("%02x\n",src_callsign[i]);
         }
         else{
             ax25_dest_src_bytes[i+7] = 0;
@@ -152,7 +152,11 @@ int main(int argc, char **argv) {
     for(i=0;i<6;i++){
         if(i<strlen(des_callsign)-1){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
-            ax25_dest_src_bytes[i] = des_callsign[i]<<1;
+            if(des_callsign[i]!=0x0a){
+                ax25_dest_src_bytes[i+7] = des_callsign[i]<<1;
+            } else {
+                ax25_dest_src_bytes[i+7] = 0;
+            }
         }
         else{
             ax25_dest_src_bytes[i] = 0;
