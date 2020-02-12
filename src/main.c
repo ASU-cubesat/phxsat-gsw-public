@@ -27,7 +27,7 @@
         AS THIS STEP BYPASSES VALIDATION.
 
 */
-#define DISABLE_CALLSIGN_PROMPT 0
+#define DISABLE_CALLSIGN_PROMPT 1
 char src_callsign[25] = "ABCDE";
 char des_callsign[25] = "PQRST";
 
@@ -150,13 +150,14 @@ int main(int argc, char **argv) {
     }
 
     for(i=0;i<6;i++){
-        if(i<strlen(des_callsign)-1){
+        if(i<strlen(des_callsign)){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
             if(des_callsign[i]!=0x0a){
                 ax25_dest_src_bytes[i+7] = des_callsign[i]<<1;
             } else {
                 ax25_dest_src_bytes[i+7] = 0;
             }
+            // printf("%02x\n",des_callsign[i]);
         }
         else{
             ax25_dest_src_bytes[i] = 0;
