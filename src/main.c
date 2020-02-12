@@ -28,8 +28,8 @@
 
 */
 #define DISABLE_CALLSIGN_PROMPT 0
-char src_callsign[25] = "XXXXXX";
-char des_callsign[25] = "XXXXXX";
+char src_callsign[25] = "ABCDE";
+char des_callsign[25] = "PQRST";
 
 //////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,7 @@ csp_thread_handle_t server_handle;
 csp_thread_handle_t debug_handle;
 
 extern uint8_t ax25_dest_src_bytes[];
+extern uint8_t channel_select;
 
 int main(int argc, char **argv) {
 
@@ -101,9 +102,15 @@ int main(int argc, char **argv) {
     }
 
     for(i=0;i<6;i++){
-        if(i<strlen(src_callsign)-1){
+        if(i<strlen(src_callsign)){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
-            ax25_dest_src_bytes[i+7] = src_callsign[i]<<1;
+            if(src_callsign[i]!=0x0a){
+                ax25_dest_src_bytes[i+7] = src_callsign[i]<<1;
+            } else {
+                ax25_dest_src_bytes[i+7] = 0;
+            }
+            
+            printf("%02x\n",src_callsign[i]);
         }
         else{
             ax25_dest_src_bytes[i+7] = 0;
