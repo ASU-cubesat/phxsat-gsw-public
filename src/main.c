@@ -153,9 +153,9 @@ int main(int argc, char **argv) {
         if(i<strlen(des_callsign)){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
             if(des_callsign[i]!=0x0a){
-                ax25_dest_src_bytes[i+7] = des_callsign[i]<<1;
+                ax25_dest_src_bytes[i] = des_callsign[i]<<1;
             } else {
-                ax25_dest_src_bytes[i+7] = 0;
+                ax25_dest_src_bytes[i] = 0;
             }
             // printf("%02x\n",des_callsign[i]);
         }
@@ -266,7 +266,7 @@ int main(int argc, char **argv) {
     /*
         Uncomment below line to enable debugging
     */
-    // csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
+    csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
 
     // Check with printout
     //csp_conn_print_table();
