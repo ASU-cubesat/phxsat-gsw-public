@@ -42,7 +42,7 @@ CSP_DEFINE_TASK(debug_task) {
 
         // Display Timestamp
         // variables to store date and time components
-        int hours, minutes, seconds, day, month, year;
+        // int hours, minutes, seconds, day, month, year;
 
         // time_t is arithmetic time type
         time_t now;

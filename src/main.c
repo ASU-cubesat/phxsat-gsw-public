@@ -28,8 +28,8 @@
 
 */
 #define DISABLE_CALLSIGN_PROMPT 1
-char src_callsign[25] = "ABCDE";
-char des_callsign[25] = "PQRST";
+char src_callsign[25] = "SRC";
+char des_callsign[25] = "DES";
 
 //////////////////////////////////////////////////////////////////////
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
         }
         invalid_char--;
         if(invalid_char>0){
-            printf("\x1B[31m%ld Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
+            printf("\x1B[31m%d Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
             continue;
         } 
         call_ok = true;
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
         }
         invalid_char--;
         if(invalid_char>0){
-            printf("\x1B[31m%ld Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
+            printf("\x1B[31m%d Invalid character(s) detected in callsign. Try Again.\n \x1B[0m",invalid_char);
             continue;
         } 
         call_ok = true;
