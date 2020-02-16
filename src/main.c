@@ -266,7 +266,7 @@ int main(int argc, char **argv) {
     /*
         Uncomment below line to enable debugging
     */
-    csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
+    // csp_thread_create(debug_task, "DEBUG", 1000, NULL, 0, &debug_handle);
 
     // Check with printout
     //csp_conn_print_table();
