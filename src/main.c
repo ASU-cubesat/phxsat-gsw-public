@@ -27,7 +27,7 @@
         AS THIS STEP BYPASSES VALIDATION.
 
 */
-#define DISABLE_CALLSIGN_PROMPT 1
+#define DISABLE_CALLSIGN_PROMPT 0
 char src_callsign[25] = "SRC";
 char des_callsign[25] = "DES";
 
@@ -41,7 +41,18 @@ csp_thread_handle_t debug_handle;
 extern uint8_t ax25_dest_src_bytes[];
 extern uint8_t channel_select;
 
+struct Configuration {
+    uint8_t prompt_disable;
+    char des_callsign[25];
+    char src_callsign[25];
+};
+
 int main(int argc, char **argv) {
+
+    // Read config file
+    FILE *config;
+
+    struct Configuration current_config;
 
     uint8_t custom[] = {
 		0x96, 0x92, 0x6E, 0x9E, 0x9E, 0xB2, 0x60,
@@ -54,6 +65,73 @@ int main(int argc, char **argv) {
         // printf("%02x ",ax25_dest_src_bytes[i]);
     }
 
+    bool call_ok, prompt_disable;
+
+    config = fopen("config.phx","r");
+
+    if(config == NULL){
+        printf("Failed to open file config file.\n");
+        prompt_disable = DISABLE_CALLSIGN_PROMPT; // Set this to true to bypass callsign prompt
+
+    } else {
+        if(fread(&current_config,sizeof(struct Configuration),1,config)>0){
+            printf("\x1B[33mConfig File found:\n\n");
+            if(current_config.prompt_disable){
+                printf("Startup Prompt: Disabled\n");
+            } else {
+                printf("Startup Prompt: Enabled\n");
+            }
+
+            int i;
+            for(i=0;i<strlen(current_config.des_callsign);i++){
+                if(current_config.des_callsign[i]=='\n'){
+                    des_callsign[i] = 0;
+                } else {
+                    des_callsign[i] = current_config.des_callsign[i];
+                }
+            }
+            for(i=0;i<strlen(current_config.src_callsign);i++){
+                if(current_config.src_callsign[i]=='\n'){
+                    src_callsign[i] = 0;
+                } else {
+                    src_callsign[i] = current_config.src_callsign[i];
+                }
+            }
+
+            printf("Source Callsign: %s\nDestination Callsign: %s\n\x1B[0m",src_callsign,des_callsign);
+            char response[20] = "";
+            bool check = true, use_file = false;
+            printf("Would you like to load above settings?(Y/N)\n");
+            while(check){
+                
+                fgets(response,20,stdin);
+                
+                char t = response[0];
+                if(t == 'Y' || t == 'y'){
+                    printf("Yes!\n");
+                    check = false;
+                    use_file = true;
+                } else if(t == 'N' || t == 'n'){
+                    printf("No\n");
+                    check = false;
+                    use_file = false;
+                }
+            }
+            if(use_file){
+                prompt_disable = current_config.prompt_disable;
+            } else {
+                prompt_disable = 0;
+            }
+            
+        }
+
+        fclose(config);
+    }
+
+    
+
+    call_ok = prompt_disable;
+
 
     printf("\x1B[37m");
     printf("************************************************\n");
@@ -63,13 +141,6 @@ int main(int argc, char **argv) {
     printf("*************** Public Release *****************\n");
     printf("************************************************\n");
     printf("\x1B[0m");
-
-    // This part of the code gets/validates the callsign from the operator
-
-    
-    // char callsign[1024] = CALL_SIGN; // This is used if prompt is disabled. 
-    bool call_ok = DISABLE_CALLSIGN_PROMPT; // Set this to true to bypass callsign prompt
-    
     
     
     uint8_t invalid_char = 0;
@@ -118,8 +189,8 @@ int main(int argc, char **argv) {
     }
 
     printf("\x1B[1;32mSource callsign has been set to %s\n\x1B[0m",src_callsign);
-
-    call_ok = DISABLE_CALLSIGN_PROMPT;
+    call_ok = prompt_disable;
+    // call_ok = DISABLE_CALLSIGN_PROMPT;
     invalid_char = 0;
     while(!call_ok){
         printf("\x1B[1;33m\nEnter Destination CallSign:\n\x1B[0m");
@@ -164,7 +235,26 @@ int main(int argc, char **argv) {
         }
     }
 
+    prompt_disable = 1;
+
     printf("\x1B[1;32mDestination callsign has been set to %s\n\x1B[0m",des_callsign);
+
+    config = fopen("config.phx","w");
+
+    current_config.prompt_disable = prompt_disable;
+    strcpy(current_config.des_callsign,des_callsign);
+    strcpy(current_config.src_callsign,src_callsign);
+
+    if(fwrite(&current_config,sizeof(struct Configuration),1,config) != 0)  
+        printf("contents to file written successfully !\n"); 
+    else 
+        printf("error writing file !\n"); 
+  
+    // close file 
+    fclose (config); 
+
+
+
 
     
 
