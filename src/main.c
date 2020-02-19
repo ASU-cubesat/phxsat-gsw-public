@@ -45,6 +45,7 @@ struct Configuration {
     uint8_t prompt_disable;
     char des_callsign[25];
     char src_callsign[25];
+    uint8_t channel;
 };
 
 int main(int argc, char **argv) {
@@ -98,7 +99,9 @@ int main(int argc, char **argv) {
                 }
             }
 
-            printf("Source Callsign: %s\nDestination Callsign: %s\n\x1B[0m",src_callsign,des_callsign);
+            channel_select = current_config.channel;
+
+            printf("Source Callsign: %s\nDestination Callsign: %s\nChannel: 0x%02x\n\x1B[0m",src_callsign,des_callsign,current_config.channel);
             char response[20] = "";
             bool check = true, use_file = false;
             printf("Would you like to load above settings?(Y/N)\n");
@@ -132,17 +135,13 @@ int main(int argc, char **argv) {
 
     call_ok = prompt_disable;
 
-
     printf("\x1B[37m");
     printf("************************************************\n");
     printf("*****    PHOENIX CUBESAT GROUND STATION    *****\n");
     printf("********** Arizona State University ************\n");
     printf("***** School of Earth & Space Exploration ******\n");
-    printf("*************** Public Release *****************\n");
-    printf("************************************************\n");
     printf("\x1B[0m");
-    
-    
+
     uint8_t invalid_char = 0;
     while(!call_ok){
         printf("\x1B[1;33m\nEnter Source CallSign:\n\x1B[0m");
@@ -220,6 +219,7 @@ int main(int argc, char **argv) {
         call_ok = true;
     }
 
+
     for(i=0;i<6;i++){
         if(i<strlen(des_callsign)){
             // printf("Setting %d th byte to %c (hex %02x:%02x)\n",i+7,callsign[i],callsign[i],callsign[i]<<1);
@@ -235,6 +235,30 @@ int main(int argc, char **argv) {
         }
     }
 
+    call_ok = prompt_disable;
+
+    char channel_tmp[25] = "";
+
+    while(!call_ok){
+        printf("\x1B[1;33m\nEnter Channel:\n\x1B[0m");
+        printf("\x1B[33m");
+        fgets(channel_tmp,1024,stdin);
+        printf("\x1B[0m");
+        if(strlen(channel_tmp)>2){
+            printf("\x1B[31mInvalid Channel. Must be single digit (%ld). Try Again\n \x1B[0m",strlen(channel_tmp));
+            continue;
+        }
+        if(channel_tmp[0]=='1'){
+            channel_select = 0x10;
+        } else if (channel_tmp[0]=='0'){
+            channel_select = 0x00;
+        } else {
+            printf("Invalid channel enter either a 1 or 0\n");
+            continue;
+        }
+        call_ok = true;
+    }
+
     prompt_disable = 1;
 
     printf("\x1B[1;32mDestination callsign has been set to %s\n\x1B[0m",des_callsign);
@@ -244,6 +268,7 @@ int main(int argc, char **argv) {
     current_config.prompt_disable = prompt_disable;
     strcpy(current_config.des_callsign,des_callsign);
     strcpy(current_config.src_callsign,src_callsign);
+    current_config.channel = channel_select;
 
     if(fwrite(&current_config,sizeof(struct Configuration),1,config) != 0)  
         printf("contents to file written successfully !\n"); 

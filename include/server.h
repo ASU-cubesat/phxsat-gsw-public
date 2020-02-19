@@ -20,9 +20,5 @@
 csp_thread_return_t server_task(void* param);
 csp_thread_return_t debug_task(void* param);
 
-// Chunk hanlding funcs 
-void csp_sfp_handler(csp_conn_t* conn, csp_packet_t* first_packet);
-int saveChunk(uint8_t* buffer, int buffer_size);
-void handleFileCommand(csp_packet_t* packet);
-void handleUDPFileTransfer(csp_packet_t* packet);
+
 #endif 
