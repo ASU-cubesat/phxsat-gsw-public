@@ -58,7 +58,21 @@ void start_cli() {
         // Parse for command 
         if (strcmp(vect[0], "ping") == 0) {
             int node = atoi(vect[1]);
-            printf("Ping node %d in %dms\n", node, csp_ping(node, 1000, 20, CSP_O_CRC32));
+            if(node==5){
+                // Send ping
+                char **set;
+                char commands[1024]= "sendto 00 15 05 01 00 01 02 03 04";
+                set = (char**)malloc(sizeof(char**) * 200); // 100 words in vect max 
+                int set_len = 10;
+                lineToVector(commands,set,&set_len);
+                cli_sendto(set, set_len);
+                printf("Ping Sent\n");
+            }
+            else{
+                printf("Node %d doesn't exist. Available nodes are: '5' for ax100.\n",node);
+            }
+            // Removed
+            // printf("Ping node %d in %dms\n", node, csp_ping(node, 1000, 20, CSP_O_CRC32));
 
             sleep(1);
         }else if (strcmp(vect[0], "quit") == 0) {
@@ -110,4 +124,47 @@ void printToConsole(csp_packet_t* packet){
     // printf("OBC--> %s",message,packet->length);  
     // printf("\033[0m\n");
     fclose(fp);
+}
+
+void cli_sendto(char** vect, int len) {
+    // Input sanitization
+    if (len < 7) {
+        printf("Not enough arguments!\n");
+        return;
+    }
+    // Get fields from vector
+    // printf("sendto: getting fields from input\n");
+    uint8_t prio = atoi(vect[1]);
+    uint8_t sport = atoi(vect[2]);
+    uint8_t dest = atoi(vect[3]);
+    uint8_t dport = atoi(vect[4]);
+    // uint8_t flags = asciiToHex(vect[5]);
+    uint8_t flags = 0x00;
+    // printf("Flags after convertion from %s gives %02x\n",vect[5],flags);
+
+    // Get data array
+    int data_len = len - 6;
+    uint8_t* data = (uint8_t*)malloc(data_len);
+    for (int i = 0; i < (data_len); i++) {
+        data[i] = asciiToHex(vect[6 + i]);
+        // printf("sendto: converting string %s, got %02x\n", vect[6 + i], data[i]);
+    }
+
+    // Copy over to a packet
+    // printf("sendto: creating packet id\n");
+    csp_packet_t* packet = csp_buffer_get(256);
+    packet->id.pri = prio;
+    packet->id.sport = sport;
+    packet->id.dst = dest;
+    packet->id.dport = dport;
+    packet->id.flags = flags;
+    // printf("sendto: header created 0x%08x \n\n",packet->id.ext);
+
+    // printf("sendto: creating packet data\n");
+    memcpy(packet->data, data, len - 6);
+    packet->length = len - 6;
+
+    // Send it off
+    // printf("sendto: sending...\n");
+    csp_sendto(prio, dest, dport, sport, CSP_O_CRC32, packet, 1000);
 }
