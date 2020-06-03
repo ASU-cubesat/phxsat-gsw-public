@@ -8,7 +8,7 @@ To send a ping command
 2. type the command `ping 5`. Here 5 refers to the node, in this case node 5 represents the AX100. 
 3. This should send the packet shown below
    ```
-     c0 10 XX XX XX XX XX XX XX XX XX XX XX XX XX XX  <<--- AX.25 Header
-     03 f0 14 50 4f 01 01 02 03 04 29 30 8c f4 c0 
+     c0 10 XX XX XX XX XX XX XX XX XX XX XX XX XX XX 03 f0  <<--- AX.25 Header
+     14 50 4f 01 01 02 03 04 29 30 8c f4 c0                 <<--- Packet Data 
 Here `01 02 03 04` is part of the payload and should be observed in the response packet. 
 
