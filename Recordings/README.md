@@ -9,6 +9,7 @@ To send a ping command
 3. This should send the packet shown below
    ```
      c0 10 XX XX XX XX XX XX XX XX XX XX XX XX XX XX 03 f0  <<--- AX.25 Header
-     14 50 4f 01 01 02 03 04 29 30 8c f4 c0                 <<--- Packet Data 
+     14 50 4f 01 01 02 03 04 29 30 8c f4                    <<--- Packet Data 
+     c0 (signifies end of KISS packet)
 Here `01 02 03 04` is part of the payload and should be observed in the response packet. 
 
